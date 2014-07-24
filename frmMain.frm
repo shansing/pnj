@@ -2,31 +2,68 @@ VERSION 5.00
 Begin VB.Form frmMain 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "质数判断"
-   ClientHeight    =   2250
+   ClientHeight    =   1290
    ClientLeft      =   2910
    ClientTop       =   3465
-   ClientWidth     =   3135
+   ClientWidth     =   4455
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
-   ScaleHeight     =   2250
-   ScaleWidth      =   3135
+   ScaleHeight     =   1290
+   ScaleWidth      =   4455
    Begin VB.TextBox txtResult 
-      Height          =   1575
-      Left            =   120
+      Height          =   1095
+      Left            =   2280
       Locked          =   -1  'True
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   2
-      Top             =   480
-      Width           =   2895
+      Top             =   120
+      Width           =   2055
    End
    Begin VB.TextBox txtN 
       Height          =   270
-      Left            =   1440
+      Left            =   720
       MaxLength       =   15
       TabIndex        =   1
       Top             =   120
       Width           =   1455
+   End
+   Begin VB.PictureBox picProcess 
+      Height          =   255
+      Left            =   120
+      ScaleHeight     =   195
+      ScaleWidth      =   1995
+      TabIndex        =   4
+      TabStop         =   0   'False
+      Top             =   720
+      Width           =   2055
+      Begin VB.Label lblProcess 
+         BackStyle       =   0  'Transparent
+         Caption         =   "输入一个正整数，再按回车"
+         BeginProperty Font 
+            Name            =   "新宋体"
+            Size            =   7.5
+            Charset         =   134
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Left            =   10
+         TabIndex        =   5
+         Top             =   20
+         Width           =   2055
+      End
+      Begin VB.Shape shpProcess 
+         BackColor       =   &H80000002&
+         BackStyle       =   1  'Opaque
+         BorderStyle     =   0  'Transparent
+         Height          =   255
+         Left            =   0
+         Top             =   0
+         Width           =   615
+      End
    End
    Begin VB.Label lblCopyright 
       BackStyle       =   0  'Transparent
@@ -42,28 +79,19 @@ Begin VB.Form frmMain
       EndProperty
       ForeColor       =   &H80000011&
       Height          =   255
-      Left            =   2040
+      Left            =   1080
       TabIndex        =   3
-      Top             =   2080
+      Top             =   1080
       Width           =   975
    End
    Begin VB.Label lblTitle 
       BackStyle       =   0  'Transparent
-      Caption         =   "输入后按回车："
+      Caption         =   "输入："
       Height          =   255
-      Left            =   160
+      Left            =   165
       TabIndex        =   0
-      Top             =   165
+      Top             =   160
       Width           =   2415
-   End
-   Begin VB.Shape shpProcess 
-      BackColor       =   &H80000002&
-      BackStyle       =   1  'Opaque
-      BorderStyle     =   0  'Transparent
-      Height          =   2295
-      Left            =   0
-      Top             =   0
-      Width           =   615
    End
 End
 Attribute VB_Name = "frmMain"
@@ -74,13 +102,17 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub startProcess()
-    On Error GoTo errShow
+    'On Error GoTo errShow
 
-    If txtN = "0" Or txtN = "1" Then
-        txtResult = "发生了错误：0和1不在我们讨论范围内。"
+    If txtN = "0" Then
+        lblProcess = "0不在我们讨论范围内！"
         Exit Sub
     ElseIf txtN = "" Then
-        txtResult = "发生了错误：没有输入任何数。"
+        lblProcess = "没有输入任何数！"
+        Exit Sub
+    ElseIf txtN = "1" Then
+        shpProcess.Width = picProcess.Width
+        lblProcess = "1既不是质数，也不是合数。"
         Exit Sub
     End If
     
@@ -94,33 +126,32 @@ Private Sub startProcess()
     a = 2
     
     While a <= Sqr(n)
-        shpProcess.Width = (a - 1) / Sqr(n) * Me.Width
+        shpProcess.Width = (a - 1) / Sqr(n) * picProcess.Width
+        lblProcess = "正在分解" & n
         DoEvents
         If n / a = Int(n / a) Then   'If n Mod a = 0 Then
-            txtResult = txtResult & Format(a) & "×" & Format(n / a) & ", "
+            txtResult = txtResult & Format(a) & "×"
+            n = n / a
+            a = 2
+        Else
+            a = a + 1
         End If
-        a = a + 1
     Wend
-    shpProcess.Width = Me.Width
+    shpProcess.Width = picProcess.Width
     
     If txtResult = "" Then
-        txtResult = n & "为质数，因数只有1与它本身。"
+        lblProcess = Int(txtN) & "为质数。"
     Else
-        txtResult = n & "为合数，除1与其本身之外的全部因数列举如下：" & vbCr & vbLf & Left(txtResult, Len(txtResult) - 2)
+        lblProcess = Int(txtN) & "为合数。"
     End If
+    txtResult = Int(txtN) & "＝" & txtResult & Format(n)
     
 errShow:
     Select Case Err.Number
         Case 0
             
-        'Case 6
-        '    If txtResult = "" Then
-        '        txtResult = "发生了错误：溢出，数目已超出本程序的处理范围。（代号：6）" & vbCr & vbLf & "程序也无法肯定" & n & "是质数还是合数。"
-        '    Else
-        '        txtResult = "发生了错误：溢出，数目已超出本程序的处理范围。（代号：6）" & vbCr & vbLf & "但程序肯定" & n & "为合数，除1与其本身之外的部分因数列举如下：" & Left(txtResult, Len(txtResult) - 2)
-        '    End If
         Case Else
-            txtResult = "发生了错误：" & Err.Description & "（代号：" & Err.Number & "）。"
+            txtResult = "错误：" & Err.Description & "（代号：" & Err.Number & "）。"
     End Select
     
     txtN.Enabled = True
@@ -137,6 +168,7 @@ End Sub
 
 Private Sub txtN_Change()
     txtResult = ""
+    lblProcess = "输入一个正整数，再按回车"
     shpProcess.Width = 0
 End Sub
 
