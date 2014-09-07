@@ -2,41 +2,24 @@ VERSION 5.00
 Begin VB.Form frmMain 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "质数判断"
-   ClientHeight    =   1290
+   ClientHeight    =   1860
    ClientLeft      =   2910
    ClientTop       =   3465
-   ClientWidth     =   4455
+   ClientWidth     =   2325
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
-   ScaleHeight     =   1290
-   ScaleWidth      =   4455
-   Begin VB.TextBox txtResult 
-      Height          =   1095
-      Left            =   2280
-      Locked          =   -1  'True
-      MultiLine       =   -1  'True
-      ScrollBars      =   2  'Vertical
-      TabIndex        =   2
-      Top             =   120
-      Width           =   2055
-   End
-   Begin VB.TextBox txtN 
-      Height          =   270
-      Left            =   720
-      MaxLength       =   15
-      TabIndex        =   1
-      Top             =   120
-      Width           =   1455
-   End
+   ScaleHeight     =   1860
+   ScaleWidth      =   2325
    Begin VB.PictureBox picProcess 
+      BorderStyle     =   0  'None
       Height          =   255
-      Left            =   120
-      ScaleHeight     =   195
-      ScaleWidth      =   1995
+      Left            =   140
+      ScaleHeight     =   255
+      ScaleWidth      =   2040
       TabIndex        =   4
       TabStop         =   0   'False
-      Top             =   720
-      Width           =   2055
+      Top             =   360
+      Width           =   2035
       Begin VB.Label lblProcess 
          BackStyle       =   0  'Transparent
          Caption         =   "输入一个正整数，再按回车"
@@ -52,7 +35,7 @@ Begin VB.Form frmMain
          Height          =   255
          Left            =   10
          TabIndex        =   5
-         Top             =   20
+         Top             =   40
          Width           =   2055
       End
       Begin VB.Shape shpProcess 
@@ -64,6 +47,24 @@ Begin VB.Form frmMain
          Top             =   0
          Width           =   615
       End
+   End
+   Begin VB.TextBox txtResult 
+      Height          =   855
+      Left            =   140
+      Locked          =   -1  'True
+      MultiLine       =   -1  'True
+      ScrollBars      =   2  'Vertical
+      TabIndex        =   2
+      Top             =   720
+      Width           =   2055
+   End
+   Begin VB.TextBox txtN 
+      Height          =   270
+      Left            =   720
+      MaxLength       =   15
+      TabIndex        =   1
+      Top             =   120
+      Width           =   1455
    End
    Begin VB.Label lblCopyright 
       BackStyle       =   0  'Transparent
@@ -79,9 +80,9 @@ Begin VB.Form frmMain
       EndProperty
       ForeColor       =   &H80000011&
       Height          =   255
-      Left            =   1080
+      Left            =   1250
       TabIndex        =   3
-      Top             =   1080
+      Top             =   1650
       Width           =   975
    End
    Begin VB.Label lblTitle 
@@ -102,7 +103,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub startProcess()
-    'On Error GoTo errShow
+    On Error GoTo errShow
 
     If txtN = "0" Then
         lblProcess = "0不在我们讨论范围内！"
@@ -126,7 +127,10 @@ Private Sub startProcess()
     a = 2
     
     While a <= Sqr(n)
-        shpProcess.Width = (a - 1) / Sqr(n) * picProcess.Width
+        Dim processWidth  As Integer
+        processWidth = (a - 1) / Sqr(n) * picProcess.Width
+        processWidth = Int((processWidth - shpProcess.Width) / (0.01 * picProcess.Width))
+        If processWidth > 0 Then shpProcess.Width = shpProcess.Width + processWidth * 0.01 * picProcess.Width
         lblProcess = "正在分解" & n
         DoEvents
         If n / a = Int(n / a) Then   'If n Mod a = 0 Then
